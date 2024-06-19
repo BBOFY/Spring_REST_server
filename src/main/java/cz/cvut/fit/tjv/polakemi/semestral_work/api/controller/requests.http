@@ -1,0 +1,19 @@
+POST http://test:test@localhost:8080/teams
+Content-Type: application/json
+Accept: application/json
+
+{
+  "teamName": "team 0",
+  "score": 0,
+  "numberOfPlayers": 0
+}
+
+###
+GET http://test:test@localhost:8080/teams
+Accept: application/json
+
+###
+DELETE http://test:test@localhost:8080/teams
+Accept: application/json
+
+###

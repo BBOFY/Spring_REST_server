@@ -1,0 +1,39 @@
+stages:
+    - test
+    - build
+    - publish
+
+variables:
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+
+test:
+  image: gradle:jdk16
+  stage: test
+  script: "gradle test"
+  artifacts:
+    when: on_failure
+    paths:
+      - build/**
+    expire_in: 5 years
+
+build-gradle:
+  image: gradle:jdk16
+  stage: build
+  script: "gradle bootJar"
+  only:
+    - master
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 5 years
+
+docker image:
+  image: docker:latest
+  stage: publish
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build -t "$IMAGE_NAME" .
+    - docker push "$IMAGE_NAME"
